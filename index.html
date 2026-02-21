@@ -371,6 +371,74 @@
   .spacer { height: 32px; }
 
   select option { background: #1a1a1a; }
+
+  /* ===== NEW: Type Selector ===== */
+  .type-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .type-btn {
+    background: var(--surface2); border: 2px solid var(--border);
+    border-radius: 12px; padding: 12px 10px; cursor: pointer;
+    display: flex; align-items: center; gap: 10px;
+    transition: all 0.15s; user-select: none;
+  }
+  .type-btn.active { border-color: var(--green); background: rgba(6,199,85,0.08); }
+  .type-btn .t-icon { font-size: 22px; }
+  .type-btn .t-label { font-size: 13px; font-weight: 700; }
+  .type-btn .t-sub { font-size: 10px; color: var(--text-muted); }
+
+  .msg-section { display: none; }
+  .msg-section.visible { display: block; }
+
+  /* ===== NEW: Carousel tabs ===== */
+  .section-label-row {
+    padding: 14px 16px; border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .section-label-row .section-label { padding: 0; border: none; }
+  .card-count-wrap { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--text-muted); }
+  .card-count-wrap select { width: 60px; padding: 4px 8px; font-size: 12px; }
+
+  .card-tabs { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 12px; }
+  .card-tab {
+    padding: 5px 14px; border-radius: 20px; font-size: 12px; font-weight: 700;
+    cursor: pointer; border: 1px solid var(--border); background: var(--surface2);
+    color: var(--text-muted); transition: all 0.15s;
+  }
+  .card-tab.active { background: var(--green); border-color: var(--green); color: white; }
+  .card-form { display: none; }
+  .card-form.visible { display: flex; flex-direction: column; gap: 14px; }
+
+  /* ===== NEW: Button list ===== */
+  .btn-list { display: flex; flex-direction: column; gap: 8px; }
+  .btn-item {
+    background: var(--surface2); border: 1px solid var(--border);
+    border-radius: 10px; padding: 12px; display: flex; flex-direction: column; gap: 10px;
+  }
+  .btn-item-header {
+    display: flex; justify-content: space-between; align-items: center;
+    font-size: 11px; color: var(--text-muted); font-weight: 700;
+  }
+  .remove-btn { background: none; border: none; color: #f87171; cursor: pointer; font-size: 18px; padding: 0; line-height: 1; }
+  .add-field-btn {
+    background: var(--surface2); border: 1px dashed var(--border);
+    border-radius: 10px; padding: 10px; color: var(--green);
+    font-size: 13px; font-weight: 700; cursor: pointer; width: 100%;
+    font-family: 'Noto Sans Thai', sans-serif; transition: all 0.15s;
+  }
+  .add-field-btn:hover { border-color: var(--green); }
+
+  /* ===== NEW: Carousel preview ===== */
+  .carousel-preview-scroll {
+    display: flex; gap: 12px; overflow-x: auto; padding: 16px;
+    scrollbar-width: thin; scrollbar-color: var(--border) transparent;
+  }
+  .carousel-preview-scroll .bubble-preview { flex-shrink: 0; width: 260px; max-width: none; margin: 0; }
+  .preview-btn { margin-top: 6px; }
+  .preview-btn-secondary {
+    width: 100%; padding: 10px; border-radius: 10px; font-size: 13px; font-weight: 700;
+    cursor: default; text-align: center; font-family: 'Noto Sans Thai', sans-serif;
+    background: white; border: 1.5px solid; margin-top: 6px;
+  }
+  .preview-btn-link { text-align: center; padding: 8px; font-size: 13px; font-weight: 700; cursor: default; margin-top: 4px; }
 </style>
 </head>
 <body>
@@ -405,65 +473,76 @@
 <!-- Main App -->
 <div id="app">
 
-  <!-- Form -->
-  <section>
-    <div class="section-label">📝 ข้อมูลโปรโมชั่น</div>
-    <div class="fields">
-      <label>
-        ชื่อโปรโมชั่น / หัวข้อหลัก
-        <input id="f-title" type="text" value="Flash Sale 50% OFF!" oninput="renderPreview()" />
-      </label>
-      <label>
-        คำอธิบาย
-        <textarea id="f-desc" oninput="renderPreview()">สินค้าทุกชิ้นลด 50% ทันที วันนี้วันเดียวเท่านั้น อย่าพลาดโอกาสสุดพิเศษ!</textarea>
-      </label>
-      <div class="row">
-        <label>
-          ราคาพิเศษ
-          <input id="f-price" type="text" value="฿499" oninput="renderPreview()" />
-        </label>
-        <label>
-          ราคาเดิม
-          <input id="f-original" type="text" value="฿999" oninput="renderPreview()" />
-        </label>
+  <!-- FLEX SECTION -->
+  <section class="msg-section visible" id="section-flex">
+    <div class="section-label-row">
+      <div class="section-label">✨ ข้อมูลโปรโมชั่น (Flex)</div>
+      <div class="card-count-wrap">
+        จำนวนการ์ด:
+        <select id="card-count" onchange="updateCardCount()">
+          <option>1</option><option>2</option><option>3</option>
+          <option>4</option><option>5</option><option>6</option>
+        </select>
       </div>
-      <label>
-        Badge / Tag เช่น SALE, HOT, NEW
-        <input id="f-tag" type="text" value="🔥 FLASH SALE" oninput="renderPreview()" />
-      </label>
-      <label>
-        URL รูปภาพ (ขนาดแนะนำ 1040x660px)
-        <input id="f-img" type="text" value="https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?w=800" oninput="renderPreview()" />
-      </label>
-      <label>
-        ข้อความบนปุ่ม
-        <input id="f-btn-text" type="text" value="ซื้อเลย!" oninput="renderPreview()" />
-      </label>
-      <label>
-        ลิงก์ปุ่ม (URL)
-        <input id="f-btn-url" type="text" value="https://example.com" oninput="renderPreview()" />
-      </label>
-      <label>
-        สีธีม
-        <div class="color-options" id="color-options">
-          <div class="color-swatch active" data-color="#06C755" style="background:#06C755" onclick="pickColor(this)"></div>
-          <div class="color-swatch" data-color="#e11d48" style="background:#e11d48" onclick="pickColor(this)"></div>
-          <div class="color-swatch" data-color="#f97316" style="background:#f97316" onclick="pickColor(this)"></div>
-          <div class="color-swatch" data-color="#8b5cf6" style="background:#8b5cf6" onclick="pickColor(this)"></div>
-          <div class="color-swatch" data-color="#0ea5e9" style="background:#0ea5e9" onclick="pickColor(this)"></div>
-          <div class="color-swatch" data-color="#1a1a1a" style="background:#1a1a1a; border: 1px solid #444" onclick="pickColor(this)"></div>
-        </div>
-      </label>
+    </div>
+    <div class="fields">
+      <div class="card-tabs" id="card-tabs"></div>
+      <div id="cards-container"></div>
     </div>
   </section>
 
   <!-- Preview -->
-  <section>
+  <section id="preview-section">
     <div class="section-label">👁 Preview</div>
     <div id="preview-wrap">
-      <div class="bubble-preview" id="bubble-preview">
-        <!-- rendered by JS -->
+      <div class="bubble-preview" id="bubble-preview"></div>
+    </div>
+  </section>
+
+  <!-- TYPE SELECTOR -->
+  <section>
+    <div class="section-label">📦 เลือกประเภทข้อความ <span style="font-size:10px;color:var(--text-muted);text-transform:none;letter-spacing:0;font-family:sans-serif">(เลือกได้หลายอย่าง)</span></div>
+    <div class="fields">
+      <div class="type-grid">
+        <div class="type-btn" id="type-text" onclick="toggleType('text')">
+          <span class="t-icon">💬</span><div><div class="t-label">ข้อความ</div><div class="t-sub">Text</div></div>
+        </div>
+        <div class="type-btn" id="type-image" onclick="toggleType('image')">
+          <span class="t-icon">🖼️</span><div><div class="t-label">รูปภาพ</div><div class="t-sub">Image</div></div>
+        </div>
+        <div class="type-btn" id="type-video" onclick="toggleType('video')">
+          <span class="t-icon">🎬</span><div><div class="t-label">วิดีโอ</div><div class="t-sub">Video</div></div>
+        </div>
+        <div class="type-btn active" id="type-flex" onclick="toggleType('flex')">
+          <span class="t-icon">✨</span><div><div class="t-label">Flex Card</div><div class="t-sub">Bubble / Carousel</div></div>
+        </div>
       </div>
+    </div>
+  </section>
+
+  <!-- TEXT SECTION -->
+  <section class="msg-section" id="section-text">
+    <div class="section-label">💬 ข้อความธรรมดา</div>
+    <div class="fields">
+      <label>ข้อความ<textarea id="txt-msg" rows="3" placeholder="พิมพ์ข้อความที่นี่..."></textarea></label>
+    </div>
+  </section>
+
+  <!-- IMAGE SECTION -->
+  <section class="msg-section" id="section-image">
+    <div class="section-label">🖼️ รูปภาพ</div>
+    <div class="fields">
+      <label>URL รูปภาพ (jpg/png)<input id="img-url" type="text" placeholder="https://..." /></label>
+      <label>URL ลิงก์เมื่อกดรูป (ไม่บังคับ)<input id="img-link" type="text" placeholder="https://..." /></label>
+    </div>
+  </section>
+
+  <!-- VIDEO SECTION -->
+  <section class="msg-section" id="section-video">
+    <div class="section-label">🎬 วิดีโอ</div>
+    <div class="fields">
+      <label>URL วิดีโอ (.mp4)<input id="vid-url" type="text" placeholder="https://...mp4" /></label>
+      <label>URL รูป Thumbnail (บังคับ)<input id="vid-thumb" type="text" placeholder="https://..." /></label>
     </div>
   </section>
 
@@ -471,7 +550,7 @@
   <section>
     <div class="section-label">🚀 ส่งข้อความ</div>
     <div class="fields">
-      <button class="send-btn" onclick="sendFlex()">
+      <button class="send-btn" onclick="sendAll()">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
         ส่งผ่าน LINE
       </button>
@@ -486,30 +565,32 @@
 <script>
 let themeColor = '#06C755';
 let liffReady = false;
+let selectedTypes = new Set(['flex']);
+let activeCard = 0;
+let cardCount = 1;
+let cardColors = ['#06C755'];
+let cardButtons = {}; // {i: [{label,url,style}]}
+
+const COLORS = ['#06C755','#e11d48','#f97316','#8b5cf6','#0ea5e9','#1a1a1a'];
 
 // ---- LIFF Init ----
 async function initLiff() {
   const id = document.getElementById('liff-id-input').value.trim();
   if (!id) return showStatus('กรุณากรอก LIFF ID', 'error', 'setup');
-
   showStatus('กำลังเชื่อมต่อ...', 'info', 'setup');
   try {
     await liff.init({ liffId: id });
-    if (!liff.isLoggedIn()) {
-      liff.login();
-      return;
-    }
+    if (!liff.isLoggedIn()) { liff.login(); return; }
     localStorage.setItem('liff_id', id);
     liffReady = true;
     document.getElementById('setup-screen').style.display = 'none';
     document.getElementById('app').style.display = 'flex';
-    renderPreview();
+    initCards();
   } catch (e) {
     showStatus('เชื่อมต่อไม่ได้: ' + e.message, 'error', 'setup');
   }
 }
 
-// ---- Auto-init from saved ID ----
 window.addEventListener('load', async () => {
   const saved = localStorage.getItem('liff_id');
   if (saved) {
@@ -520,194 +601,267 @@ window.addEventListener('load', async () => {
         liffReady = true;
         document.getElementById('setup-screen').style.display = 'none';
         document.getElementById('app').style.display = 'flex';
-        renderPreview();
+        initCards();
         return;
       }
     } catch(e) {}
   }
 });
 
-// ---- Color Picker ----
-function pickColor(el) {
-  document.querySelectorAll('.color-swatch').forEach(s => s.classList.remove('active'));
-  el.classList.add('active');
-  themeColor = el.dataset.color;
+// ---- Type Selector ----
+function toggleType(t) {
+  const btn = document.getElementById('type-' + t);
+  const sec = document.getElementById('section-' + t);
+  if (selectedTypes.has(t)) {
+    selectedTypes.delete(t);
+    btn.classList.remove('active');
+    if (sec) sec.classList.remove('visible');
+  } else {
+    selectedTypes.add(t);
+    btn.classList.add('active');
+    if (sec) sec.classList.add('visible');
+  }
+  // Show/hide preview only when flex is selected
+  document.getElementById('preview-section').style.display = selectedTypes.has('flex') ? 'block' : 'none';
+}
+
+// ---- Card / Carousel ----
+function initCards() {
+  cardCount = 1;
+  cardColors = ['#06C755'];
+  cardButtons = {};
+  activeCard = 0;
+  renderTabs();
+  renderCards();
+}
+
+function updateCardCount() {
+  const n = parseInt(document.getElementById('card-count').value);
+  while (cardColors.length < n) cardColors.push('#06C755');
+  cardColors = cardColors.slice(0, n);
+  cardCount = n;
+  if (activeCard >= n) activeCard = 0;
+  renderTabs();
+  renderCards();
+}
+
+function renderTabs() {
+  const wrap = document.getElementById('card-tabs');
+  if (cardCount <= 1) { wrap.innerHTML = ''; return; }
+  wrap.innerHTML = Array.from({length: cardCount}, (_, i) =>
+    `<div class="card-tab ${i===activeCard?'active':''}" onclick="switchCard(${i})">การ์ด ${i+1}</div>`
+  ).join('');
+}
+
+function switchCard(i) {
+  activeCard = i;
+  renderTabs();
+  document.querySelectorAll('.card-form').forEach((f, idx) => {
+    f.classList.toggle('visible', idx === i);
+  });
   renderPreview();
 }
 
-// ---- Preview Render ----
-function renderPreview() {
-  const title = document.getElementById('f-title').value || 'หัวข้อโปรโมชั่น';
-  const desc = document.getElementById('f-desc').value || 'คำอธิบาย';
-  const price = document.getElementById('f-price').value || '฿0';
-  const original = document.getElementById('f-original').value || '';
-  const tag = document.getElementById('f-tag').value || '';
-  const img = document.getElementById('f-img').value;
-  const btnText = document.getElementById('f-btn-text').value || 'คลิกเลย';
+function renderCards() {
+  const container = document.getElementById('cards-container');
+  container.innerHTML = '';
+  for (let i = 0; i < cardCount; i++) {
+    const div = document.createElement('div');
+    div.className = 'card-form' + (i === activeCard ? ' visible' : '');
+    div.innerHTML = cardHTML(i);
+    container.appendChild(div);
+    // init buttons
+    if (!cardButtons[i]) cardButtons[i] = [{label: 'ซื้อเลย!', url: 'https://example.com', style: 'primary'}];
+    renderBtnList(i);
+  }
+  renderPreview();
+}
 
-  const tc = themeColor;
-
-  document.getElementById('bubble-preview').innerHTML = `
-    ${img
-      ? `<img class="preview-hero" src="${img}" onerror="this.style.display='none'" />`
-      : `<div class="preview-hero-placeholder" style="background:${tc}">🖼 ใส่ URL รูปภาพ</div>`
-    }
-    <div class="preview-body">
-      ${tag ? `<span class="preview-tag" style="background:${tc}">${tag}</span>` : ''}
-      <div class="preview-title">${title}</div>
-      <div class="preview-desc">${desc}</div>
-      <div class="preview-price-row">
-        <span class="preview-price" style="color:${tc}">${price}</span>
-        ${original ? `<span class="preview-original">${original}</span>` : ''}
-      </div>
-      <div class="preview-btn" style="background:${tc}">${btnText}</div>
+function cardHTML(i) {
+  const tc = cardColors[i] || '#06C755';
+  return `
+    <label>ชื่อโปรโมชั่น / หัวข้อหลัก
+      <input id="c${i}-title" type="text" value="Flash Sale 50% OFF!" oninput="renderPreview()" />
+    </label>
+    <label>คำอธิบาย
+      <textarea id="c${i}-desc" oninput="renderPreview()">สินค้าทุกชิ้นลด 50% ทันที วันนี้วันเดียวเท่านั้น!</textarea>
+    </label>
+    <div class="row">
+      <label>ราคาพิเศษ<input id="c${i}-price" type="text" value="฿499" oninput="renderPreview()" /></label>
+      <label>ราคาเดิม<input id="c${i}-original" type="text" value="฿999" oninput="renderPreview()" /></label>
     </div>
+    <label>Badge / Tag<input id="c${i}-tag" type="text" value="🔥 FLASH SALE" oninput="renderPreview()" /></label>
+    <label>URL รูปภาพ<input id="c${i}-img" type="text" value="https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?w=800" oninput="renderPreview()" /></label>
+    <label>สีธีม
+      <div class="color-options" id="c${i}-colors">
+        ${COLORS.map(c => `<div class="color-swatch ${c===tc?'active':''}" data-color="${c}" style="background:${c};${c==='#1a1a1a'?'border:1px solid #444':''}" onclick="pickCardColor(${i},this)"></div>`).join('')}
+      </div>
+    </label>
+    <div style="font-size:12px;color:var(--text-muted);font-weight:700;margin-bottom:2px">🔘 ปุ่มกดลิงก์</div>
+    <div class="btn-list" id="c${i}-btnlist"></div>
+    <button class="add-field-btn" onclick="addBtn(${i})">+ เพิ่มปุ่ม</button>
   `;
 }
 
-// ---- Build Flex JSON ----
-function buildFlex() {
-  const title = document.getElementById('f-title').value || 'โปรโมชั่นพิเศษ';
-  const desc = document.getElementById('f-desc').value || '';
-  const price = document.getElementById('f-price').value || '';
-  const original = document.getElementById('f-original').value || '';
-  const tag = document.getElementById('f-tag').value || '';
-  const img = document.getElementById('f-img').value;
-  const btnText = document.getElementById('f-btn-text').value || 'ดูเพิ่มเติม';
-  const btnUrl = document.getElementById('f-btn-url').value || 'https://example.com';
-  const tc = themeColor;
-
-  const bodyContents = [];
-
-  if (tag) {
-    bodyContents.push({
-      type: "box",
-      layout: "horizontal",
-      contents: [{
-        type: "text",
-        text: tag,
-        size: "xs",
-        color: "#ffffff",
-        weight: "bold"
-      }],
-      backgroundColor: tc,
-      paddingAll: "6px",
-      cornerRadius: "4px"
-    });
-  }
-
-  bodyContents.push({
-    type: "text",
-    text: title,
-    weight: "bold",
-    size: "xl",
-    wrap: true,
-    color: "#1a1a1a",
-    margin: tag ? "md" : "none"
-  });
-
-  if (desc) {
-    bodyContents.push({
-      type: "text",
-      text: desc,
-      size: "sm",
-      wrap: true,
-      color: "#888888",
-      margin: "sm"
-    });
-  }
-
-  if (price) {
-    const priceRow = {
-      type: "box",
-      layout: "baseline",
-      margin: "md",
-      contents: [{
-        type: "text",
-        text: price,
-        size: "xxl",
-        weight: "bold",
-        color: tc,
-        flex: 0
-      }]
-    };
-    if (original) {
-      priceRow.contents.push({
-        type: "text",
-        text: original,
-        size: "sm",
-        color: "#bbbbbb",
-        decoration: "line-through",
-        margin: "sm",
-        flex: 0
-      });
-    }
-    bodyContents.push(priceRow);
-  }
-
-  const flex = {
-    type: "flex",
-    altText: title,
-    contents: {
-      type: "bubble",
-      hero: img ? {
-        type: "image",
-        url: img,
-        size: "full",
-        aspectRatio: "20:13",
-        aspectMode: "cover"
-      } : undefined,
-      body: {
-        type: "box",
-        layout: "vertical",
-        contents: bodyContents,
-        spacing: "sm"
-      },
-      footer: {
-        type: "box",
-        layout: "vertical",
-        contents: [{
-          type: "button",
-          action: {
-            type: "uri",
-            label: btnText,
-            uri: btnUrl
-          },
-          style: "primary",
-          color: tc,
-          height: "sm"
-        }]
-      }
-    }
-  };
-
-  // remove undefined
-  if (!img) delete flex.contents.hero;
-
-  return flex;
+function renderBtnList(i) {
+  const el = document.getElementById('c' + i + '-btnlist');
+  if (!el) return;
+  const btns = cardButtons[i] || [];
+  el.innerHTML = btns.map((b, j) => `
+    <div class="btn-item">
+      <div class="btn-item-header">
+        <span>ปุ่มที่ ${j+1}</span>
+        <button class="remove-btn" onclick="removeBtn(${i},${j})">×</button>
+      </div>
+      <div class="row">
+        <label>ข้อความบนปุ่ม<input type="text" value="${b.label}" oninput="updBtn(${i},${j},'label',this.value)" /></label>
+        <label>สไตล์
+          <select onchange="updBtn(${i},${j},'style',this.value)">
+            <option value="primary" ${b.style==='primary'?'selected':''}>Primary (สี)</option>
+            <option value="secondary" ${b.style==='secondary'?'selected':''}>Secondary (ขอบ)</option>
+            <option value="link" ${b.style==='link'?'selected':''}>Link (ข้อความ)</option>
+          </select>
+        </label>
+      </div>
+      <label>URL<input type="text" value="${b.url}" oninput="updBtn(${i},${j},'url',this.value)" /></label>
+    </div>`).join('');
+  renderPreview();
 }
 
-// ---- Send Flex ----
-async function sendFlex() {
-  if (!liffReady) {
-    showStatus('ยังไม่ได้เชื่อมต่อ LINE', 'error', 'app');
-    return;
-  }
+function addBtn(i) {
+  if (!cardButtons[i]) cardButtons[i] = [];
+  cardButtons[i].push({label: 'ดูเพิ่มเติม', url: 'https://example.com', style: 'secondary'});
+  renderBtnList(i);
+}
 
-  if (!liff.isApiAvailable('shareTargetPicker')) {
-    showStatus('shareTargetPicker ไม่รองรับบนอุปกรณ์/เวอร์ชันนี้', 'error', 'app');
-    return;
-  }
+function removeBtn(i, j) {
+  cardButtons[i].splice(j, 1);
+  renderBtnList(i);
+}
 
-  const flexMsg = buildFlex();
+function updBtn(i, j, field, val) {
+  if (cardButtons[i] && cardButtons[i][j]) cardButtons[i][j][field] = val;
+  renderPreview();
+}
+
+function pickCardColor(i, el) {
+  document.querySelectorAll('#c' + i + '-colors .color-swatch').forEach(s => s.classList.remove('active'));
+  el.classList.add('active');
+  cardColors[i] = el.dataset.color;
+  renderPreview();
+}
+
+// ---- Preview ----
+function getCardData(i) {
+  return {
+    title:    document.getElementById(`c${i}-title`)?.value || '',
+    desc:     document.getElementById(`c${i}-desc`)?.value || '',
+    price:    document.getElementById(`c${i}-price`)?.value || '',
+    original: document.getElementById(`c${i}-original`)?.value || '',
+    tag:      document.getElementById(`c${i}-tag`)?.value || '',
+    img:      document.getElementById(`c${i}-img`)?.value || '',
+    color:    cardColors[i] || '#06C755',
+    buttons:  cardButtons[i] || []
+  };
+}
+
+function bubblePreviewHTML(d) {
+  const tc = d.color;
+  const btns = d.buttons.map(b => {
+    if (b.style === 'secondary') return `<div class="preview-btn-secondary" style="color:${tc};border-color:${tc}">${b.label}</div>`;
+    if (b.style === 'link') return `<div class="preview-btn-link" style="color:${tc}">${b.label}</div>`;
+    return `<div class="preview-btn" style="background:${tc}">${b.label}</div>`;
+  }).join('');
+  return `
+    <div class="bubble-preview">
+      ${d.img ? `<img class="preview-hero" src="${d.img}" onerror="this.style.display='none'" />`
+               : `<div class="preview-hero-placeholder" style="background:${tc}">🖼 ใส่ URL รูปภาพ</div>`}
+      <div class="preview-body">
+        ${d.tag ? `<span class="preview-tag" style="background:${tc}">${d.tag}</span>` : ''}
+        <div class="preview-title">${d.title}</div>
+        <div class="preview-desc">${d.desc}</div>
+        <div class="preview-price-row">
+          <span class="preview-price" style="color:${tc}">${d.price}</span>
+          ${d.original ? `<span class="preview-original">${d.original}</span>` : ''}
+        </div>
+        ${btns}
+      </div>
+    </div>`;
+}
+
+function renderPreview() {
+  const wrap = document.getElementById('preview-wrap');
+  if (cardCount === 1) {
+    wrap.innerHTML = `<div style="padding:16px">${bubblePreviewHTML(getCardData(0))}</div>`;
+  } else {
+    wrap.innerHTML = `<div class="carousel-preview-scroll">${
+      Array.from({length: cardCount}, (_, i) => bubblePreviewHTML(getCardData(i))).join('')
+    }</div>`;
+  }
+}
+
+// ---- Build Flex JSON ----
+function buildBubble(d) {
+  const body = [];
+  if (d.tag) body.push({type:"box",layout:"horizontal",contents:[{type:"text",text:d.tag,size:"xs",color:"#ffffff",weight:"bold"}],backgroundColor:d.color,paddingAll:"6px",cornerRadius:"4px"});
+  body.push({type:"text",text:d.title||' ',weight:"bold",size:"xl",wrap:true,color:"#1a1a1a",margin:d.tag?"md":"none"});
+  if (d.desc) body.push({type:"text",text:d.desc,size:"sm",wrap:true,color:"#888888",margin:"sm"});
+  if (d.price) {
+    const row = {type:"box",layout:"baseline",margin:"md",contents:[{type:"text",text:d.price,size:"xxl",weight:"bold",color:d.color,flex:0}]};
+    if (d.original) row.contents.push({type:"text",text:d.original,size:"sm",color:"#bbbbbb",decoration:"line-through",margin:"sm",flex:0});
+    body.push(row);
+  }
+  const footerContents = d.buttons.map(b => ({
+    type:"button",
+    action:{type:"uri",label:b.label,uri:b.url||'https://example.com'},
+    style: b.style === 'primary' ? 'primary' : b.style === 'secondary' ? 'secondary' : 'link',
+    color: b.style === 'primary' ? d.color : undefined,
+    height:"sm"
+  }));
+  const bubble = {
+    type:"bubble",
+    body:{type:"box",layout:"vertical",contents:body,spacing:"sm"},
+    footer:{type:"box",layout:"vertical",contents:footerContents,spacing:"sm"}
+  };
+  if (d.img) bubble.hero = {type:"image",url:d.img,size:"full",aspectRatio:"20:13",aspectMode:"cover"};
+  return bubble;
+}
+
+function buildFlexMsg() {
+  const cards = Array.from({length: cardCount}, (_, i) => buildBubble(getCardData(i)));
+  const altText = getCardData(0).title || 'โปรโมชั่น';
+  if (cardCount === 1) return {type:"flex", altText, contents: cards[0]};
+  return {type:"flex", altText, contents:{type:"carousel", contents: cards}};
+}
+
+// ---- Send All ----
+async function sendAll() {
+  if (!liffReady) return showStatus('ยังไม่ได้เชื่อมต่อ LINE', 'error', 'app');
+  if (selectedTypes.size === 0) return showStatus('กรุณาเลือกประเภทข้อความก่อน', 'error', 'app');
+  if (!liff.isApiAvailable('shareTargetPicker')) return showStatus('shareTargetPicker ไม่รองรับบนอุปกรณ์นี้', 'error', 'app');
+
+  const msgs = [];
+  if (selectedTypes.has('text')) {
+    const t = document.getElementById('txt-msg')?.value.trim();
+    if (t) msgs.push({type:'text', text:t});
+  }
+  if (selectedTypes.has('image')) {
+    const u = document.getElementById('img-url')?.value.trim();
+    if (u) msgs.push({type:'image', originalContentUrl:u, previewImageUrl:u});
+  }
+  if (selectedTypes.has('video')) {
+    const u = document.getElementById('vid-url')?.value.trim();
+    const th = document.getElementById('vid-thumb')?.value.trim();
+    if (u && th) msgs.push({type:'video', originalContentUrl:u, previewImageUrl:th});
+  }
+  if (selectedTypes.has('flex')) msgs.push(buildFlexMsg());
+
+  if (msgs.length === 0) return showStatus('ไม่มีข้อมูลที่จะส่ง', 'error', 'app');
 
   try {
-    const result = await liff.shareTargetPicker([flexMsg], { isMultiple: true });
-    if (result) {
-      showStatus('✅ ส่งสำเร็จแล้ว!', 'success', 'app');
-    } else {
-      showStatus('ยกเลิกการส่ง', 'info', 'app');
-    }
+    const result = await liff.shareTargetPicker(msgs, {isMultiple: true});
+    if (result) showStatus('✅ ส่งสำเร็จแล้ว! (' + msgs.length + ' ข้อความ)', 'success', 'app');
+    else showStatus('ยกเลิกการส่ง', 'info', 'app');
   } catch (e) {
     showStatus('เกิดข้อผิดพลาด: ' + e.message, 'error', 'app');
   }
